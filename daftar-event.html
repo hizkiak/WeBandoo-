@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Formulir Pendaftaran - WeBandoo+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Menggunakan CSS yang sama agar konsisten */
+        :root {
+            --color-primary: #4A8645;
+            --color-bg: #f8f9fa;
+            --color-text-dark: #2c3e50;
+            --color-white: #ffffff;
+            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+        body {
+            background-color: var(--color-bg); color: var(--color-text-dark);
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+
+        .navbar {
+            width: 100%; background-color: var(--color-text-dark); color: var(--color-white);
+            padding: 20px 30px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar .logo { font-size: 26px; font-weight: 700; color: var(--color-primary); text-decoration: none; }
+
+        .container {
+            max-width: 800px; margin: 50px auto; padding: 20px; flex-grow: 1;
+        }
+
+        .card {
+            background: var(--color-white); border-radius: 20px; box-shadow: var(--shadow-soft);
+            padding: 40px; overflow: hidden; position: relative;
+        }
+
+        .card-header {
+            border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 30px;
+        }
+
+        .card-header h1 { font-size: 24px; color: var(--color-primary); margin-bottom: 5px; }
+        .card-header p { color: #666; font-size: 14px; }
+
+        .event-summary {
+            background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 30px;
+            display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--color-primary);
+        }
+        .event-summary i { font-size: 24px; color: var(--color-primary); }
+        .event-summary h3 { font-size: 18px; margin: 0; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 14px; transition: 0.3s;
+        }
+        .form-group input:focus { border-color: var(--color-primary); outline: none; }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .btn-submit {
+            width: 100%; background: var(--color-primary); color: white; padding: 15px;
+            border: none; border-radius: 10px; font-weight: 700; font-size: 16px; cursor: pointer;
+            transition: 0.3s; margin-top: 10px;
+        }
+        .btn-submit:hover { background: #3a6b37; transform: translateY(-2px); }
+
+        .btn-back {
+            display: inline-block; margin-bottom: 20px; text-decoration: none; color: #666; font-size: 14px;
+        }
+        .btn-back:hover { color: var(--color-primary); }
+
+        /* Pop up sukses */
+        .success-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 999;
+        }
+        .success-box {
+            background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px;
+            animation: popIn 0.3s ease;
+        }
+        .success-icon {
+            width: 80px; height: 80px; background: #dcfce7; color: var(--color-primary);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 40px; margin: 0 auto 20px auto;
+        }
+        @keyframes popIn { from{transform: scale(0.8); opacity: 0;} to{transform: scale(1); opacity: 1;} }
+
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="home page.html" class="logo">WeBandoo+</a>
+    </nav>
+
+    <div class="container">
+        <a href="event.html" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali ke Jadwal</a>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Konfirmasi Pendaftaran</h1>
+                <p>Silakan lengkapi data diri Anda untuk mendapatkan E-Ticket.</p>
+            </div>
+
+            <div class="event-summary">
+                <i class="fas fa-ticket-alt"></i>
+                <div>
+                    <span style="font-size: 12px; color: #666;">Anda mendaftar untuk:</span>
+                    <h3 id="targetEventName">Memuat nama event...</h3>
+                </div>
+            </div>
+
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" placeholder="Sesuai KTP/Identitas" required>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="Tiket akan dikirim ke sini" required>
+                    </div>
+                    <div class="form-group">
+                        <label>No. WhatsApp</label>
+                        <input type="tel" placeholder="08xxxxxxxxxx" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Jumlah Tiket</label>
+                        <select id="ticketQty">
+                            <option value="1">1 Tiket</option>
+                            <option value="2">2 Tiket</option>
+                            <option value="3">3 Tiket</option>
+                            <option value="4">4 Tiket</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori Peserta</label>
+                        <select>
+                            <option>Umum</option>
+                            <option>Pelajar/Mahasiswa</option>
+                            <option>Wisatawan Asing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Konfirmasi & Daftar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-overlay" id="successPopup">
+        <div class="success-box">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">Pendaftaran Berhasil!</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+                Terima kasih telah mendaftar di <strong id="successEventName"></strong>. E-Ticket telah dikirim ke email Anda.
+            </p>
+            <button onclick="window.location.href='event.html'" style="background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Kembali ke Event</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Ambil Nama Event dari URL (Query String)
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventName = urlParams.get('event');
+
+        // 2. Tampilkan Nama Event di Halaman
+        const displayElement = document.getElementById('targetEventName');
+        const successElement = document.getElementById('successEventName');
+
+        if (eventName) {
+            displayElement.innerText = eventName;
+            successElement.innerText = eventName;
+        } else {
+            displayElement.innerText = "Event Belum Dipilih";
+            displayElement.style.color = "red";
+        }
+
+        // 3. Handle Submit Form
+        const form = document.getElementById('registrationForm');
+        const popup = document.getElementById('successPopup');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah reload halaman
+            
+            const btn = document.querySelector('.btn-submit');
+            const originalText = btn.innerHTML;
+
+            // Efek Loading
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            btn.style.opacity = '0.7';
+
+            // Simulasi proses server (1.5 detik)
+            setTimeout(() => {
+                popup.style.display = "flex"; // Munculkan pop-up sukses
+            }, 1500);
+        });
+    </script>
+
+</body>
+</html>
